@@ -1,0 +1,29 @@
+{
+  "name": "storeflex",
+  "version": "1.0.0",
+  "description": "Complete inventory management system with React, Node.js, and PostgreSQL",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "build": "docker-compose build",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "test": "cd backend && npm test && cd ../frontend && npm test"
+  },
+  "keywords": [
+    "inventory",
+    "management",
+    "react",
+    "nodejs",
+    "postgresql",
+    "docker"
+  ],
+  "author": "StoreFlex Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rohank05/StoreFlex.git"
+  }
+}
