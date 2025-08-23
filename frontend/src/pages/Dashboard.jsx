@@ -35,21 +35,33 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
         <div className="spinner"></div>
-        <span className="ml-2 text-gray-600">Loading dashboard...</span>
+        <p className="text-gray-600 font-medium">Loading dashboard data...</p>
+        <p className="text-sm text-gray-500">This may take a moment</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <div className="flex">
-          <AlertTriangle className="h-5 w-5 text-red-400" />
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Error</h3>
-            <p className="text-sm text-red-700 mt-1">{error}</p>
+      <div className="max-w-lg mx-auto mt-8">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 shadow-sm">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <AlertTriangle className="h-6 w-6 text-red-500" />
+            </div>
+            <div className="ml-4">
+              <h3 className="text-base font-semibold text-red-800">Connection Error</h3>
+              <p className="text-sm text-red-700 mt-2">{error}</p>
+              <p className="text-xs text-red-600 mt-2">Please check if the backend server is running.</p>
+              <button 
+                onClick={fetchDashboardData}
+                className="mt-4 btn btn-outline text-red-700 border-red-300 hover:bg-red-50"
+              >
+                Try Again
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -98,29 +110,33 @@ function Dashboard() {
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} className="card">
+            <div key={index} className="card group">
               <div className="card-body">
-                <div className="flex items-center">
-                  <div className={`${stat.color} p-2 rounded-lg`}>
-                    <Icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="ml-4 flex-1">
-                    <p className="text-sm font-medium text-gray-600">{stat.name}</p>
-                    <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className={`${stat.color} p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform`}>
+                      <Icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="ml-4 flex-1">
+                      <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">{stat.name}</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-4 flex items-center">
-                  {stat.changeType === 'increase' ? (
-                    <ArrowUpRight className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <ArrowDownRight className="h-4 w-4 text-red-500" />
-                  )}
-                  <span className={`text-sm font-medium ml-1 ${
-                    stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
+                <div className="mt-6 flex items-center">
+                  <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    stat.changeType === 'increase' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
                   }`}>
+                    {stat.changeType === 'increase' ? (
+                      <ArrowUpRight className="h-3 w-3 mr-1" />
+                    ) : (
+                      <ArrowDownRight className="h-3 w-3 mr-1" />
+                    )}
                     {stat.change}
-                  </span>
-                  <span className="text-sm text-gray-500 ml-1">from last month</span>
+                  </div>
+                  <span className="text-sm text-gray-500 ml-2">from last month</span>
                 </div>
               </div>
             </div>
