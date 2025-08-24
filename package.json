@@ -1,29 +1,27 @@
 {
   "name": "storeflex",
   "version": "1.0.0",
-  "description": "Complete inventory management system with React, Node.js, and PostgreSQL",
+  "description": "Modern Multi-Tenant Inventory Management System",
   "main": "index.js",
   "scripts": {
-    "start": "docker-compose up -d",
-    "stop": "docker-compose down",
-    "build": "docker-compose build",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "test": "cd backend && npm test && cd ../frontend && npm test"
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start": "cd backend && npm start",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm install && npm run install:backend && npm run install:frontend",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build"
   },
-  "keywords": [
-    "inventory",
-    "management",
-    "react",
-    "nodejs",
-    "postgresql",
-    "docker"
-  ],
+  "keywords": ["inventory", "management", "multi-tenant", "react", "nodejs", "material-ui"],
   "author": "StoreFlex Team",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rohank05/StoreFlex.git"
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

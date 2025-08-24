@@ -1,291 +1,205 @@
-# StoreFlex - Inventory Management System
+# StoreFlex - Multi-Tenant Inventory Management System
 
-A comprehensive inventory management system built with React (Vite), Node.js 21, and PostgreSQL. Features include product CRUD operations, CSV/Excel import functionality, analytics dashboard, and real-time stock tracking.
+A modern, scalable inventory management system built with React, Node.js, and PostgreSQL, designed for multi-tenant SaaS operations.
 
-## 🚀 Features
+## Features
 
-- **Product Management**: Complete CRUD operations for inventory items
-- **Import/Export**: CSV and Excel file import with error handling and validation
-- **Analytics Dashboard**: Real-time insights with charts and performance metrics
-- **Stock Management**: Track stock levels, movements, and low-stock alerts
-- **Category Management**: Organize products by categories
-- **Responsive Design**: Modern UI that works on all devices
-- **Docker Support**: Easy deployment with Docker Compose
+- **Multi-Tenant Architecture**: Isolated data per organization with shared infrastructure
+- **Role-Based Access Control**: Granular permissions per module and user
+- **Modern UI**: Built with Material UI v5 and responsive design
+- **Real-Time Updates**: WebSocket integration for live inventory tracking
+- **Comprehensive Modules**: Products, Stock, Orders, Suppliers, Analytics
+- **Scalable Backend**: Node.js with TypeScript and Prisma ORM
 
-## 🛠 Technology Stack
+## Technology Stack
 
 ### Frontend
-- **React 18** - Modern React with hooks
-- **Vite** - Fast build tool and development server
-- **React Router** - Client-side routing
-- **Recharts** - Data visualization and charts
-- **Lucide React** - Beautiful icons
-- **Axios** - HTTP client for API calls
-- **React Hot Toast** - Elegant notifications
+- React 18 with TypeScript
+- Material UI v5 + custom theme
+- Vite for fast development
+- React Query for server state management
+- React Hook Form + Zod validation
+- Socket.IO client for real-time updates
 
 ### Backend
-- **Node.js 21** - Latest Node.js runtime
-- **Express.js** - Web application framework
-- **PostgreSQL** - Robust relational database
-- **Joi** - Data validation
-- **Multer** - File upload handling
-- **CSV Parser** - CSV file processing
-- **XLSX** - Excel file processing
+- Node.js with Express and TypeScript
+- Prisma ORM with PostgreSQL
+- JWT authentication with refresh tokens
+- Socket.IO for WebSocket connections
+- Multi-tenant middleware architecture
+- Redis for session storage
 
-### Infrastructure
-- **Docker** - Containerization
-- **Nginx** - Reverse proxy and static file serving
-- **Docker Compose** - Multi-container orchestration
+### Database & Infrastructure
+- PostgreSQL with schema-based tenant isolation
+- Redis for caching and sessions
+- Docker containers for development
+- Automated migration and setup scripts
 
-## 📋 Prerequisites
+## Quick Start
 
-- **Node.js 21+**
-- **PostgreSQL 15+**
-- **Docker & Docker Compose** (for containerized deployment)
-
-## 🏃‍♂️ Quick Start
-
-### Option 1: Docker Compose (Recommended)
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/rohank05/StoreFlex.git
-   cd StoreFlex
-   ```
-
-2. **Start all services**
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
-   - Complete App (via Nginx): http://localhost:80
+### Option 1: Automated Setup (Recommended)
+```bash
+./start.sh
+```
 
 ### Option 2: Manual Setup
-
-#### Backend Setup
-
-1. **Navigate to backend directory**
+1. **Start database services**
    ```bash
-   cd backend
+   docker-compose up -d postgres redis
    ```
 
 2. **Install dependencies**
    ```bash
-   npm install
+   cd backend && npm install
+   cd ../frontend && npm install
    ```
 
-3. **Set up environment variables**
+3. **Setup database**
    ```bash
-   cp .env.example .env
-   # Edit .env with your database credentials
+   cd backend && npm run db:generate
    ```
 
-4. **Start PostgreSQL** (make sure it's running on port 5432)
-
-5. **Start the backend server**
+4. **Start development servers**
    ```bash
-   npm run dev
+   # Terminal 1 - Backend
+   cd backend && npm run dev
+   
+   # Terminal 2 - Frontend
+   cd frontend && npm run dev
    ```
 
-#### Frontend Setup
+### Access the Application
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3000
+- **API Health Check**: http://localhost:3000/api/health
+- **Database**: localhost:5433 (PostgreSQL)
+- **Redis**: localhost:6379
 
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
+### Stop Services
+```bash
+./stop.sh
+```
+or manually:
+```bash
+# Stop Docker services
+docker-compose down
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Stop Node.js processes
+pkill -f "tsx watch"
+pkill -f "vite"
+```
 
-3. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-4. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
-
-## 📊 API Endpoints
-
-### Products
-- `GET /api/products` - Get all products (with filtering)
-- `GET /api/products/:id` - Get single product
-- `POST /api/products` - Create new product
-- `PUT /api/products/:id` - Update product
-- `DELETE /api/products/:id` - Delete product
-- `PUT /api/products/:id/stock` - Update product stock
-- `GET /api/products/low-stock` - Get low stock products
-
-### Categories
-- `GET /api/categories` - Get all categories
-- `POST /api/categories` - Create new category
-- `PUT /api/categories/:id` - Update category
-- `DELETE /api/categories/:id` - Delete category
-
-### Analytics
-- `GET /api/analytics/dashboard` - Get dashboard statistics
-- `GET /api/analytics/stock-trends` - Get stock movement trends
-- `GET /api/analytics/import-stats` - Get import statistics
-
-### Import
-- `POST /api/import/upload` - Upload CSV/Excel file
-- `GET /api/import/history` - Get import history
-- `GET /api/import/template` - Download import template
-
-## 📁 Project Structure
+## Project Structure
 
 ```
-StoreFlex/
+storeflex/
 ├── backend/                 # Node.js API server
 │   ├── src/
-│   │   ├── config/         # Database configuration
-│   │   ├── controllers/    # Request handlers
-│   │   ├── models/         # Database models
-│   │   ├── routes/         # API routes
-│   │   └── server.js       # Main server file
-│   ├── Dockerfile
+│   │   ├── controllers/     # Route controllers
+│   │   ├── middleware/      # Express middleware
+│   │   ├── models/          # Prisma models
+│   │   ├── routes/          # API routes
+│   │   ├── services/        # Business logic
+│   │   └── utils/           # Utility functions
+│   ├── prisma/              # Database schema and migrations
 │   └── package.json
-├── frontend/               # React application
+├── frontend/                # React application
 │   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/          # Page components
-│   │   ├── services/       # API services
-│   │   └── App.jsx         # Main app component
-│   ├── Dockerfile
+│   │   ├── components/      # Reusable UI components
+│   │   ├── pages/           # Page components
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── services/        # API services
+│   │   ├── theme/           # Material UI theme
+│   │   └── types/           # TypeScript types
 │   └── package.json
-├── docker-compose.yml      # Docker orchestration
-├── nginx.conf             # Nginx configuration
+├── docker-compose.yml       # Development environment
 └── README.md
 ```
 
-## 🔧 Configuration
+## Key Features Implemented
 
-### Environment Variables
+### ✅ **Authentication & Multi-Tenancy**
+- JWT authentication with refresh tokens
+- Organization-based multi-tenancy
+- User registration and login
+- Tenant isolation with PostgreSQL schemas
 
-#### Backend (.env)
-```env
-PORT=5000
-NODE_ENV=development
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=storeflex
-DB_USER=postgres
-DB_PASSWORD=password
-JWT_SECRET=your-secret-key
-CORS_ORIGINS=http://localhost:3000,http://localhost:5173
-```
+### ✅ **Modern UI/UX**
+- Material UI v5 with custom theme
+- Responsive design for all screen sizes
+- Dark/light mode ready
+- Professional dashboard with charts and analytics
 
-#### Frontend
-```env
-VITE_API_URL=http://localhost:5000/api
-```
+### ✅ **Core Functionality**
+- **Dashboard**: Overview with KPIs, charts, and recent activities
+- **Products**: Product catalog with search and filtering
+- **Inventory**: Real-time stock tracking and adjustments
+- **Orders**: Purchase order management
+- **Analytics**: Sales trends and performance metrics
+- **Settings**: User and organization management
 
-## 📤 Import/Export
+### ✅ **Technical Features**
+- TypeScript throughout the stack
+- Real-time updates with WebSocket
+- Advanced data grids with sorting and filtering
+- Form validation with Zod
+- Error handling and loading states
+- Docker containerization ready
 
-### Import Format
-The system supports CSV and Excel files with the following columns:
+## API Endpoints
 
-**Required:**
-- `name` - Product name
-- `sku` - Stock Keeping Unit (unique identifier)
+### Authentication
+- `POST /api/auth/register` - Register new user and organization
+- `POST /api/auth/login` - User login
+- `POST /api/auth/refresh` - Refresh access token
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/logout` - User logout
 
-**Optional:**
-- `description` - Product description
-- `category` - Category name (auto-created if doesn't exist)
-- `supplier` - Supplier name (auto-created if doesn't exist)
-- `unit_price` - Selling price
-- `cost_price` - Cost price
-- `quantity` - Stock quantity
-- `min_stock` - Minimum stock level
-- `max_stock` - Maximum stock level
-- `barcode` - Product barcode
-- `location` - Storage location
-- `status` - active/inactive
+### Tenant Management
+- `GET /api/tenants/:slug` - Get tenant by slug
+- `GET /api/tenants` - Get current tenant info
 
-### Download Template
-Use the "Download Template" button in the Import page to get a properly formatted Excel template.
+### Core Modules (Multi-tenant)
+- `GET /api/products` - List products
+- `GET /api/inventory` - List inventory
+- `GET /api/orders` - List orders
+- `GET /api/users` - List organization users
 
-## 🐳 Docker Deployment
+## Database Schema
 
-### Services
-- **database**: PostgreSQL 15 with persistent volume
-- **backend**: Node.js API server
-- **frontend**: React app served with Nginx
-- **nginx**: Reverse proxy for routing
+The system uses a multi-tenant PostgreSQL architecture:
 
-### Commands
+- **Shared Schema**: User authentication, tenant management, sessions
+- **Tenant Schemas**: Isolated data per organization (products, inventory, orders, etc.)
+- **Audit Logging**: Complete audit trail for all operations
+
+## Development Commands
+
 ```bash
-# Start all services
-docker-compose up -d
+# Backend
+npm run dev:backend          # Start backend dev server
+npm run build:backend        # Build backend
+npm run db:generate          # Generate Prisma client
+npm run db:migrate           # Run database migrations
 
-# View logs
-docker-compose logs -f
+# Frontend  
+npm run dev:frontend         # Start frontend dev server
+npm run build:frontend       # Build frontend
+npm run lint                 # Lint code
 
-# Stop all services
-docker-compose down
-
-# Rebuild and restart
-docker-compose up -d --build
+# Both
+npm run dev                  # Start both servers
+npm run build                # Build both applications
 ```
 
-## 📈 Features Overview
+## Deployment
 
-### Dashboard
-- Real-time inventory statistics
-- Stock level charts
-- Category distribution
-- Top products by value
-- Recent activity feed
-
-### Product Management
-- Add, edit, delete products
-- Stock level tracking
-- Category assignment
-- Price management
-- Status control
-
-### Analytics
-- Stock movement trends
-- Category performance
-- Import statistics
-- Low stock alerts
-
-### Import System
-- Drag & drop file upload
-- CSV and Excel support
-- Validation and error reporting
-- Import history tracking
-- Bulk product updates
-
-## 🧪 Testing
-
-### Backend
 ```bash
-cd backend
-npm test
+npm run build
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
-### Frontend
-```bash
-cd frontend
-npm test
-```
-
-## 🔒 Security Features
-
-- Input validation with Joi
-- SQL injection prevention
-- CORS configuration
-- Helmet.js security headers
-- File upload restrictions
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -293,16 +207,6 @@ npm test
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- React and Vite teams for excellent development tools
-- PostgreSQL for robust database capabilities
-- All open-source contributors whose libraries made this project possible
-
-## 📞 Support
-
-For support, email admin@storeflex.com or create an issue in this repository.
+MIT

@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["shared", "public"]
+}
+
+// Shared schema models for multi-tenant architecture
+
+model Tenant {
+  id               String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name             String   @db.VarChar(255)
+  slug             String   @unique @db.VarChar(100)
+  schemaName       String   @unique @map("schema_name") @db.VarChar(63)
+  domain           String?  @db.VarChar(255)
+  settings         Json     @default("{}")
+  subscriptionPlan String   @default("basic") @map("subscription_plan") @db.VarChar(50)
+  status           String   @default("active") @db.VarChar(20)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  users User[]
+
+  @@map("tenants")
+  @@schema("shared")
+}
+
+model User {
+  id                       String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  tenantId                 String    @map("tenant_id") @db.Uuid
+  email                    String    @unique @db.VarChar(255)
+  passwordHash             String    @map("password_hash") @db.VarChar(255)
+  firstName                String    @map("first_name") @db.VarChar(100)
+  lastName                 String    @map("last_name") @db.VarChar(100)
+  avatarUrl                String?   @map("avatar_url") @db.VarChar(500)
+  isActive                 Boolean   @default(true) @map("is_active")
+  isEmailVerified          Boolean   @default(false) @map("is_email_verified")
+  emailVerificationToken   String?   @map("email_verification_token") @db.VarChar(255)
+  passwordResetToken       String?   @map("password_reset_token") @db.VarChar(255)
+  passwordResetExpires     DateTime? @map("password_reset_expires") @db.Timestamptz(6)
+  lastLoginAt              DateTime? @map("last_login_at") @db.Timestamptz(6)
+  createdAt                DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  tenant   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions UserSession[]
+
+  @@map("users")
+  @@schema("shared")
+}
+
+model UserSession {
+  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  refreshToken String   @map("refresh_token") @db.VarChar(500)
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz(6)
+  userAgent   String?   @map("user_agent") @db.Text
+  ipAddress   String?   @map("ip_address") @db.Inet
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+  @@schema("shared")
+}
+
+// Note: Tenant-specific models will be created dynamically
+// using raw SQL queries based on the tenant schema
+// This approach allows for better data isolation and scalability

@@ -1,32 +1,17 @@
-# Use Node.js 21 Alpine for building
-FROM node:21-alpine as builder
-
-# Set working directory
+FROM node:18-alpine AS base
 WORKDIR /app
-
-# Copy package files
 COPY package*.json ./
+RUN npm ci --only=production
 
-# Install dependencies
+FROM node:18-alpine AS build
+WORKDIR /app
+COPY package*.json ./
 RUN npm ci
-
-# Copy source code
 COPY . .
-
-# Build the application
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
-
-# Copy built files to nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port
-EXPOSE 3000
-
-# Start nginx
+FROM nginx:alpine AS production
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

@@ -116,8 +116,22 @@ uploads/
 *.sqlite3
 *.db
 
+# Prisma
+prisma/migrations/*.sql
+
 # Docker volumes
 postgres_data/
+
+# Test files
+test-results/
+playwright-report/
+coverage/
+.nyc_output/
+
+# Backup files
+*.backup
+*.bak
+*.tmp
 
 # Logs
 logs/
